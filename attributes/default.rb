@@ -29,3 +29,15 @@ default[:cloudfoundry_health_manager][:restart_timeout]  = 20
 
 # TODO (trotter): Find out what this does.
 default[:cloudfoundry_health_manager][:stable_state]     = 60
+
+#TODO (ASNOUN):Paramters need to connect to the database  
+default[:cloudfoundry_health_manager][:database_host ] = ""
+default[:cloudfoundry_health_manager][:database_name]=""
+default[:cloudfoundry_health_manager][:postgres_password]=""
+
+#TODO (ASNOUN):Paramters need to connect to the nats
+default[:cloudfoundry_health_manager][:nats_user]=""
+default[:cloudfoundry_health_manager][:nats_password]=""
+default[:cloudfoundry_health_manager][:nats_host]=""
+default[:cloudfoundry_health_manager][:nats_port]=""
+
