@@ -6,7 +6,7 @@
 local_route: <%= node[:cloudfoundry_common][:local_route] %>
 
 # NATS message bus URI
-mbus: nats://<%= node[:nats_server][:user] %>:<%= node[:nats_server][:password] %>@<%= node[:cloudfoundry_common][:nats_server][:host] %>:<%= node[:cloudfoundry_common][:nats_server][:port] %>/
+mbus: nats://<%= node[:cloudfoundry_health_manager][:nats_user] %>:<%= node[:cloudfoundry_health_manager][:nats_password] %>@<%= node[:cloudfoundry_health_manager][:nats_host] %>:<%= node[:cloudfoundry_health_manager][:nats_port] %>/
 logging:
   level: <%= node[:cloudfoundry_health_manager][:log_level] %>
   file:  <%= node[:cloudfoundry_health_manager][:log_file] %>
@@ -16,12 +16,12 @@ rails_environment: production
 # This database is shared with the cloud controller.
 database_environment: # replaces database.yml
   production:
-    database: <%= node[:cloudfoundry_cloud_controller][:database][:name] %>
-    host: <%= node[:cloudfoundry_cloud_controller][:database][:host] %>
+    database: <%= node[:cloudfoundry_health_manager][:database_name] %>
+    host: <%= node[:cloudfoundry_health_manager][:database_host] %>
     port: 5432
     encoding: utf8
     username: postgres
-    password: <%= node[:postgresql][:password][:postgres] %>
+    password: <%= node[:cloudfoundry_health_manager][:postgres_password] %>
     adapter: postgresql
     timeout: 2000
     template: template0 # Required for utf8 encoding
