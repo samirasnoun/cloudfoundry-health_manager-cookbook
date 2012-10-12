@@ -40,4 +40,5 @@ default['cloudfoundry_health_manager']['nats_user']=""
 default['cloudfoundry_health_manager']['nats_password']=""
 default['cloudfoundry_health_manager']['nats_host']=""
 default['cloudfoundry_health_manager']['nats_port']=""
-
+default['cloudfoundry_health_manager']['cf_session']['cf_id'] = '1'
+default['cloudfoundry_health_manager']['cf_session']['name'] = ''

@@ -16,30 +16,61 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+
 if Chef::Config[:solo]
  Chef::Log.warn("This recipe uses search. Chef Solo does not support search.")
 
 else 
 
-  m_nodes = search(:node, "role:cloudfoundry_controller")
-  m_node = m_nodes.first
-  if m_nodes.count > 0 
-    node.set['cloudfoundry_health_manager']['database_host '] = m_node.ipaddress
-    node.set['cloudfoundry_health_manager']['database_name'] = m_node.cloudfoundry_cloud_controller.database.name
-    node.set['cloudfoundry_health_manager']['postgres_password']= m_node.postgresql.password.postgres
-  end 
 
-  nats_nodes = search(:node, "role:cloudfoundry_nats_server")
-  nats_node_first = nats_nodes.first
-  if nats_nodes.count > 0  
-    node.set['cloudfoundry_health_manager']['nats_user']= nats_node_first.nats_server.user
-    node.set['cloudfoundry_health_manager']['nats_password']= nats_node_first.nats_server.password
-    node.set['cloudfoundry_health_manager']['nats_host']= nats_node_first.ipaddress
-    node.set['cloudfoundry_health_manager']['nats_port']= nats_node_first.nats_server.port
-  end 
+# For the nokogiri dependency
+package "libxml2"
+package "libxml2-dev"
+package "libxslt1-dev"
 
-end
+# For the sqlite3 dependency
+package "sqlite3"
+package "libsqlite3-dev"
+
+Chef::Log.warn("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
+
+
+Chef::Log.warn("node['cloudfoundry_health_manager']['cf_session']['cf_id'] = " +  node['cloudfoundry_health_manager']['cf_session']['cf_id'] )
+
+Chef::Log.warn("node['cloudfoundry_cloud_controller']['cf_session']['cf_id'] = " +  node['cloudfoundry_cloud_controller']['cf_session']['cf_id'] )
+
+#Chef::Log.warn("node['cloudfoundry_dea']['cf_session']['cf_id'] = " +  node['cloudfoundry_dea']['cf_session']['cf_id'] )
+
+Chef::Log.warn("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
+
+
+
+  cf_id_node = node['cloudfoundry_health_manager']['cf_session']['cf_id']
+  m_nodes = search(:node, "role:cloudfoundry_controller AND cf_id:#{cf_id_node}" )
+
+Chef::Log.warn("m_nodes = " +  m_nodes.to_s)
+
+
+  k = node
+          node.set['cloudfoundry_health_manager']['database_host'] = k['ipaddress']
+          node.set['cloudfoundry_health_manager']['database_name'] = k['cloudfoundry_cloud_controller']['database']['name']
+          node.set['cloudfoundry_health_manager']['postgres_password']= k['postgresql']['password']['postgres']
+
+   if(node['cloudfoundry_health_manager']['database_host'] == nil ) then 
+        Chef::Log.warn("No cloud controller found for this cloud foundry session =  " + node.ipaddress)
+   end 
+  
+  nats_nodes = search(:node, "role:cloudfoundry_nats_server AND cf_id:#{cf_id_node}" )
+        j= nats_nodes.first
+      	    node.set['searched_data']['nats_user']= j['nats_server']['user']
+            node.set['searched_data']['nats_password'] = j['nats_server']['password']
+            node.set['searched_data']['nats_host']= j['ipaddress']
+            node.set['searched_data']['nats_port']= j['nats_server']['port']
+
+  # if(node['']['nats_server']['host'] == nil ) then 
+#	        Chef::Log.warn("No nats servers found for this cloud foundry session =  " + node.ipaddress)
+#   end 
 
 cloudfoundry_component "health_manager"
 
-
+end
